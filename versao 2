@@ -1,0 +1,122 @@
+//Programa: Carrinho de controle remoto bluetooth - CIEBP
+//data: 01/09/2023
+//Autor: CIEBP Araraquara
+
+//informaçoes para programar o controle blouetooth
+/*informaçoes do controle blouetooth
+QUANDO NEM UM COMANDO INFORMADO - 83 
+para a direita o bluetooth lê - 82
+para a esquerda 76
+para frente 70 
+para trás 66 
+Desliga LED dianteiro - 119
+Liga o LED dianteiro - 87
+Desligar o LED traseiro - 117
+Liga o LED traseiro - 85
+Desligar a buzina - 118
+Ligar a buzina - 86
+Desligar o pisca alerta - 120
+ligar o pisca alerta - 88*/
+
+//carrega as bibliotecas
+#include <SoftwareSerial.h>
+
+// Define os pinos de comunicação do modulo bluetooth
+SoftwareSerial bluetooth(13, 12);  //RX TX lembra do inverso (o rx do componente tx do arduino)
+
+//Atribuindo nome aos pinos - variaveis- pederia ser intilizado int
+#define m1f 2  //tras direita
+#define m1t 3  //tras direita frente
+#define m2f 5  //tras esquerda tras
+#define m2t 4  //tras esquerda frente
+#define m3f 7  //frente esquerda tras
+#define m3t 6  //frente direita tras
+#define m4f 9  //frente esquerda frente
+#define m4t 8  //frente direita frente
+
+
+// FUNÇÃO PARAR - DESLIGA TODOS OS MOTORES
+void parar() {
+  digitalWrite(m1f, LOW);
+  digitalWrite(m1t, LOW);
+  digitalWrite(m2f, LOW);
+  digitalWrite(m2t, LOW);
+  digitalWrite(m3f, LOW);
+  digitalWrite(m3t, LOW);
+  digitalWrite(m4f, LOW);
+  digitalWrite(m4t, LOW);
+}
+
+//FUNÇÃO TRAS - LIGA OS PINOS M3, M5, M8 E M9 - FAZZENDO O CARRO IR PARA TRAS
+void tras() {
+  digitalWrite(m1t, HIGH);
+  digitalWrite(m2t, HIGH);
+  digitalWrite(m3t, HIGH);
+  digitalWrite(m4t, HIGH);
+}
+//FUNÇÃO FRENTE - LIGA OS PINOS M10, M11, M3 E M5 - FAZENDO O CARRO IR PARA FRENTE
+void frente() {
+  digitalWrite(m1f, HIGH);
+  digitalWrite(m2f, HIGH);
+  digitalWrite(m3f, HIGH);
+  digitalWrite(m4f, HIGH);
+}
+// FUNÇÃO DIREITA - LIGA OS PINOS M5 e M10 FAZENDO O CARRO VIARA PARA A DIREITA
+void direita() {
+  digitalWrite(m3f, HIGH);
+  digitalWrite(m1f, HIGH);
+  //igitalWrite(m4t, HIGH);
+  //digitalWrite(m2t, HIGH);
+}
+// FUNÇÃO ESQUERDA - LIGA OS PINOS M3 e M11 FAZENDO O CARRO VIARA PARA A eSQUERDA
+void esquerda() {
+  digitalWrite(m4f, HIGH);
+  digitalWrite(m2f, HIGH);
+  //digitalWrite(m3t, HIGH);
+  //digitalWrite(m1t, HIGH);
+}
+
+void setup() {
+  bluetooth.begin(9600);  // COMOONICAÇÃO SERIAL BLUETOOTH
+  Serial.begin(9600);     // MONITOR SERIAL
+  // DEFINE AS PORTAS COMO SAIDA DE INFORMAÇÃO
+  pinMode(m1f, OUTPUT);
+  pinMode(m1t, OUTPUT);
+  pinMode(m2f, OUTPUT);
+  pinMode(m2t, OUTPUT);
+  pinMode(m3f, OUTPUT);
+  pinMode(m3t, OUTPUT);
+  pinMode(m4f, OUTPUT);
+  pinMode(m4t, OUTPUT);
+}
+
+//INICIO DO CODIGO QUE VAI RODAR NO CARRINHO
+void loop() {
+  int C = bluetooth.read();  //  A VARIAVEL C ARMAZENA A LEITURA DO BLUETOOTH
+  Serial.println(C);         //  A VARIAVEL C É IMPRESA NO MONITOR SERIAL
+
+  // SE A VARIAVEL C FOR IGUAL A 83 - CHAMA AFUNÇÃO PARAR()
+  if (C == 83) {
+    parar();
+  }
+
+  // SE A VARIAVEL C FOR IGUAL A 82 - CHAMA AFUNÇÃO DIREITA()
+  if (C == 82) {
+    direita();
+  }
+
+  // SE A VARIAVEL C FOR IGUAL A 76 - CHAMA AFUNÇÃO ESQUERDA()
+  if (C == 76) {
+    esquerda();
+  }
+
+  // SE A VARIAVEL C FOR IGUAL A 70 - CHAMA AFUNÇÃO FRENTE()
+  if (C == 70) {
+    frente();
+  }
+
+  // SE A VARIAVEL C FOR IGUAL A 66 - CHAMA AFUNÇÃO TRAS()
+  if (C == 66) {
+    tras();
+  }
+}
